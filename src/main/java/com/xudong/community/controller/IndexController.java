@@ -7,7 +7,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
 import javax.servlet.http.HttpServletRequest;
+
 /**
  * Created by xuxudong on 2020-02-28 15:29
  */
@@ -21,10 +23,12 @@ public class IndexController {
     @GetMapping("/")
     public String hello(HttpServletRequest request, Model model,
                         @RequestParam(name = "page", defaultValue = "1") Integer page,
-                        @RequestParam(name = "size", defaultValue = "2") Integer size) {
+                        @RequestParam(name = "size", defaultValue = "5") Integer size,
+                        @RequestParam(name = "search", required = false) String search) {
 
-        PaginationDTO paginationDTO = questionService.getQuestionList(page, size);
+        PaginationDTO paginationDTO = questionService.getQuestionList(page, size, search);
         model.addAttribute("paginationDTO", paginationDTO);
+        model.addAttribute("search",search);
         return "index";
     }
 }

@@ -9,7 +9,11 @@ public enum CustomizeErrorCode implements ICustomizeErrorCode {
     NO_LOGIN(2003,"未登录，不能进行评论，请先登录"),
     SYS_ERROR(2004,"服务冒烟了，要不稍后再试？"),
     TYPE_PARAM_WRONG(2005,"评论类型错误或不存在"),
-    COMMENT_NOT_FOUND(2006,"你回复的评论不存在了，要不换个试试");
+    COMMENT_NOT_FOUND(2006,"你回复的评论不存在了，要不换个试试"),
+    CONTENT_IS_EMPTY(2007,"输入的内容不能为空"),
+    READ_NOTIFICATION_FAIL(2008,"非法操作，读取别人信息"),
+    NOTIFICATION_NOT_FOUND(2009,"消息不翼而飞了？"),
+    FILE_UPLOAD_FAIL(2010,"图片上传失败");
 
     @Override
     public String getMassage() {

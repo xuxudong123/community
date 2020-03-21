@@ -1,0 +1,47 @@
+[33mcommit dfa3d7d5f67c931205b580fe2991bbc9330982e1[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m)[m
+Author: xuxudong123 <18324715069@163.com>
+Date:   Thu Mar 12 15:39:49 2020 +0800
+
+    3-12一系列提交 包含：generator,migration,Exception,enum...
+
+[33mcommit 21de120bd77ba0b2736350149520c54b04eabec9[m
+Author: xuxudong123 <18324715069@163.com>
+Date:   Wed Mar 4 21:36:46 2020 +0800
+
+    分页，migration，前后端交互数据页面
+
+[33mcommit 878e64e6fdfdc750556b1d4f3303bd3f3a4e9e7e[m
+Author: xuxudong123 <18324715069@163.com>
+Date:   Tue Mar 3 12:24:13 2020 +0800
+
+    连接数据库，增加获取和存储user代码
+
+[33mcommit ec97a9c53a0657d1f0772ef381679fc988b57129[m
+Author: xuxudong123 <18324715069@163.com>
+Date:   Sat Feb 29 21:03:38 2020 +0800
+
+    将代码中的动态数据放入配置文件中
+
+[33mcommit 2fb4fe62d0db1f149f20c7cf956ce8e68dc0b999[m
+Author: xuxudong123 <18324715069@163.com>
+Date:   Sat Feb 29 20:40:19 2020 +0800
+
+    编写登录时获取github用户信息登录
+
+[33mcommit a96176ba74a322a4ea94f146bf990282593a16cf[m
+Author: xuxudong123 <18324715069@163.com>
+Date:   Sat Feb 29 17:35:48 2020 +0800
+
+    引入bootstrap 添加社区导航栏
+
+[33mcommit fb147e7cc2c618f62456187f93b442fa6a0ee2db[m
+Author: xuxudong123 <18324715069@163.com>
+Date:   Fri Feb 28 17:11:42 2020 +0800
+
+    add README file
+
+[33mcommit a046fdacd77f590ec3a43b7f60e5afdf3492b118[m
+Author: xuxudong <xuxudong@sunline.cn>
+Date:   Fri Feb 28 16:57:59 2020 +0800
+
+    init rep

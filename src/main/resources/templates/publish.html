@@ -5,9 +5,12 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <script src="/js/jquery-3.4.1.min.js"></script>
     <script src="/js/bootstrap.min.js" type="application/javascript"></script>
+    <script src="/js/community.js" type="application/javascript"></script>
+    <script src="/js/editormd.min.js" type="application/javascript"></script>
     <link rel=stylesheet href="/css/bootstrap.min.css"/>
     <link rel=stylesheet href="/css/bootstrap-theme.min.css"/>
     <link rel=stylesheet href="/css/community.css"/>
+    <link rel=stylesheet href="/css/editormd.min.css"/>
 </head>
 <body>
 <div th:insert="~{navigation :: nav}"></div>
@@ -21,16 +24,54 @@
                 <input type="hidden" name="id" th:value="${id}">
                 <div class="form-group">
                     <label for="title">问题标题（简单扼要）：</label>
-                    <input type="text" class="form-control" th:value="${title}" id="title" name="title" placeholder="问题标题...">
+                    <input type="text" class="form-control" th:value="${title}" id="title" name="title"
+                           placeholder="问题标题..." autocomplete="off">
                 </div>
-                <div class="form-group">
+                <div class="form-group" id="question-editor">
                     <label for="description">问题补充（必填，参照右侧提示）：</label>
                     <textarea class="form-control" th:text="${description}" id="description" name="description"
-                              cols="30" rows="10"></textarea>
+                              style="display: none"
+                              cols="30" rows="10" autocomplete="off"></textarea>
                 </div>
+                <script type="text/javascript">
+                    $(function () {
+                        var editor = editormd("question-editor", {
+                            width: "100%",
+                            height: "100%",
+                            path: "/js/lib/",
+                            delay: 0,
+                            watch: false,
+                            placeholder: "请输入问题描述",
+                            imageUpload: true,
+                            imageFormats: ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
+                            imageUploadURL: "/file/upload"
+                        });
+                    });
+                </script>
                 <div class="form-group">
-                    <label for="tag">添加标签：</label>\
-                    <input type="text" class="form-control" th:value="${tag}" id="tag" name="tag" placeholder="输入标签，以，号分隔">
+                    <label for="tag">添加标签：</label>
+                    <input type="text" class="form-control" th:value="${tag}" id="tag" name="tag"
+                           placeholder="输入标签，以，号分隔" autocomplete="off" onclick="showSelectTag()">
+                    <div id="select-tag" class="publish-tag-tab">
+                        <ul class="nav nav-tabs" role="tablist">
+                            <li role="presentation" th:each="selectCategory,selectCategoryStat:${tags}"
+                                th:class="${selectCategoryStat.first ? 'active' : ''}">
+                                <a th:href="'#'+ ${selectCategory.categoryName}" aria-controls="home" role="tab"
+                                   data-toggle="tab" th:text="${selectCategory.categoryName}"></a>
+                            </li>
+                        </ul>
+                        <div class="tab-content">
+                            <div role="tabpanel" class="tab-pane" th:id="${selectCategory.categoryName}"
+                                 th:each="selectCategory:${tags}"
+                                 th:class="${selectCategoryStat.first ? 'active tab-pane': 'tab-pane'}">
+                                <span class="label label-info" th:each="selectTag:${selectCategory.tags}">
+                                    <span class="glyphicon glyphicon-tag" onclick="selectTag(this)"
+                                          th:data-tag="${selectTag}" th:text="${' '+selectTag}">
+                                    </span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <span th:if="${error != null}" class="alert alert-danger" role="alert" th:text="${error}"></span>
                 <button type="submit" class="btn btn-success but-publish">发布</button>
@@ -38,18 +79,9 @@
         </div>
         <div class="col-lg-3 col-sm-12 col-md-12 col-xs-12">
             <h3>问题发起指南</h3>
-            我来写第一个帖子-你们都是什么时候知道elasticsearch的？
-            怎么解决elasticsearch集群占用太多虚拟内存(VIRT)的问题？占用了几十个G，有什么可以对它进行限制的相关设置吗？
-            ElasticSearch-Hadoop的目標是什麼呢??
-            如何清理Elasticsearch特定时间段数据？
-            请教elasticsearch出现unassigned shards根本原因
-            elasticsearch scroll查询的原理没太懂
-            elasticsearch functionScoreQuery scriptFunction效率问题
-            如何设置分配给elasticsearch的内存大小？
-            elasticsearch 设置 node.data: false 依然有数据
-            elasticsearch 怎么实现按位与操作吗，或者取十进制对应的二进制某一位的值？
         </div>
     </div>
 </div>
+<div th:insert="~{footer :: foot}"></div>
 </body>
 </html>
