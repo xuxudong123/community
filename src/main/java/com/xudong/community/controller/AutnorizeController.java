@@ -6,6 +6,7 @@ import com.xudong.community.mapper.UserMapper;
 import com.xudong.community.model.User;
 import com.xudong.community.provider.GithubProvider;
 import com.xudong.community.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -21,6 +22,7 @@ import java.util.UUID;
  * Created by xuxudong on 2020-02-29 18:23
  */
 @Controller
+@Slf4j
 public class AutnorizeController {
     @Autowired
     private GithubProvider githubProvider;
@@ -66,6 +68,7 @@ public class AutnorizeController {
 
             //登录成功，写cookie和session
 //            request.getSession().setAttribute("user",githubUser);
+//            log.debug("");
             return "redirect:/";
         } else {
             //登录失败,重新登录
