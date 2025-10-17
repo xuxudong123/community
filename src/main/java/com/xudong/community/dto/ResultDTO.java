@@ -31,6 +31,13 @@ public class ResultDTO<T> {
         return errorOf(e.getCode(),e.getMessage());
     }
 
+    public static ResultDTO errorOf(String message) {
+        ResultDTO resultDTO = new ResultDTO();
+        resultDTO.setCode(500);
+        resultDTO.setMessage(message);
+        return resultDTO;
+    }
+
     public static ResultDTO okOf() {
         ResultDTO resultDTO = new ResultDTO();
         resultDTO.setCode(200);

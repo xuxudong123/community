@@ -1,0 +1,365 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="${title}">Claude编码助手</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link rel="stylesheet" href="/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="/css/bootstrap-theme.min.css"/>
+    <link rel="stylesheet" href="/css/community.css"/>
+    <script src="/js/jquery-3.4.1.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <style>
+        .claude-container {
+            margin-top: 20px;
+        }
+        .function-tabs {
+            margin-bottom: 20px;
+        }
+        .code-area {
+            min-height: 300px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+        .result-area {
+            min-height: 200px;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 15px;
+            margin-top: 15px;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+        }
+        .loading {
+            text-align: center;
+            padding: 20px;
+        }
+        .status-indicator {
+            margin-bottom: 15px;
+        }
+        .status-success {
+            color: #28a745;
+        }
+        .status-error {
+            color: #dc3545;
+        }
+        .language-selector {
+            margin-bottom: 15px;
+        }
+        .btn-claude {
+            background-color: #6f42c1;
+            border-color: #6f42c1;
+            color: white;
+        }
+        .btn-claude:hover {
+            background-color: #5a32a3;
+            border-color: #5a32a3;
+            color: white;
+        }
+        .proxy-info {
+            background-color: #e7f3ff;
+            border: 1px solid #b8daff;
+            border-radius: 4px;
+            padding: 10px;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+<div th:insert="~{navigation :: nav}"></div>
+
+<div class="container-fluid main claude-container">
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <h2>Claude编码助手 <small>专为中国开发者设计</small></h2>
+            
+            <!-- 代理连接提示 -->
+            <div class="proxy-info">
+                <strong>🌐 中国用户使用提示：</strong>
+                <ul style="margin-bottom: 0;">
+                    <li>请确保已配置VPN或代理服务器</li>
+                    <li>在application-dev.properties中设置正确的代理地址</li>
+                    <li>确保已获取有效的Claude API密钥</li>
+                </ul>
+            </div>
+            
+            <!-- 连接状态检查 -->
+            <div class="status-indicator">
+                <button type="button" class="btn btn-info btn-sm" onclick="checkApiStatus()">
+                    检查API连接状态
+                </button>
+                <span id="statusResult"></span>
+            </div>
+            
+            <!-- 功能选项卡 -->
+            <ul class="nav nav-tabs function-tabs" role="tablist">
+                <li role="presentation" class="active">
+                    <a href="#generate" aria-controls="generate" role="tab" data-toggle="tab">代码生成</a>
+                </li>
+                <li role="presentation">
+                    <a href="#review" aria-controls="review" role="tab" data-toggle="tab">代码审查</a>
+                </li>
+                <li role="presentation">
+                    <a href="#explain" aria-controls="explain" role="tab" data-toggle="tab">代码解释</a>
+                </li>
+            </ul>
+            
+            <!-- 选项卡内容 -->
+            <div class="tab-content">
+                <!-- 代码生成 -->
+                <div role="tabpanel" class="tab-pane active" id="generate">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <div class="form-group language-selector">
+                                <label for="generateLanguage">编程语言：</label>
+                                <select class="form-control" id="generateLanguage" style="width: 200px; display: inline-block;">
+                                    <option value="Java">Java</option>
+                                    <option value="Python">Python</option>
+                                    <option value="JavaScript">JavaScript</option>
+                                    <option value="TypeScript">TypeScript</option>
+                                    <option value="C++">C++</option>
+                                    <option value="Go">Go</option>
+                                    <option value="Rust">Rust</option>
+                                </select>
+                                
+                                <label for="generateFramework" style="margin-left: 20px;">框架：</label>
+                                <input type="text" class="form-control" id="generateFramework" 
+                                       placeholder="如：Spring Boot, React, Vue等" style="width: 200px; display: inline-block;">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="generatePrompt">代码需求描述：</label>
+                                <textarea class="form-control code-area" id="generatePrompt" 
+                                          placeholder="请详细描述您需要生成的代码功能，例如：&#10;- 创建一个用户注册接口&#10;- 实现JWT认证中间件&#10;- 编写数据库连接池配置&#10;等等..."></textarea>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label>
+                                    <input type="checkbox" id="includeComments" checked> 包含详细注释
+                                </label>
+                                <label style="margin-left: 20px;">
+                                    <input type="checkbox" id="includeTests"> 生成单元测试
+                                </label>
+                            </div>
+                            
+                            <button type="button" class="btn btn-claude btn-lg" onclick="generateCode()">
+                                🚀 生成代码
+                            </button>
+                            
+                            <div id="generateResult" class="result-area" style="display: none;"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 代码审查 -->
+                <div role="tabpanel" class="tab-pane" id="review">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <div class="form-group language-selector">
+                                <label for="reviewLanguage">编程语言：</label>
+                                <select class="form-control" id="reviewLanguage" style="width: 200px; display: inline-block;">
+                                    <option value="Java">Java</option>
+                                    <option value="Python">Python</option>
+                                    <option value="JavaScript">JavaScript</option>
+                                    <option value="TypeScript">TypeScript</option>
+                                    <option value="C++">C++</option>
+                                    <option value="Go">Go</option>
+                                    <option value="Rust">Rust</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="reviewCode">请粘贴需要审查的代码：</label>
+                                <textarea class="form-control code-area" id="reviewCode" 
+                                          placeholder="请在此处粘贴您的代码..."></textarea>
+                            </div>
+                            
+                            <button type="button" class="btn btn-claude btn-lg" onclick="reviewCode()">
+                                🔍 审查代码
+                            </button>
+                            
+                            <div id="reviewResult" class="result-area" style="display: none;"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 代码解释 -->
+                <div role="tabpanel" class="tab-pane" id="explain">
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            <div class="form-group language-selector">
+                                <label for="explainLanguage">编程语言：</label>
+                                <select class="form-control" id="explainLanguage" style="width: 200px; display: inline-block;">
+                                    <option value="Java">Java</option>
+                                    <option value="Python">Python</option>
+                                    <option value="JavaScript">JavaScript</option>
+                                    <option value="TypeScript">TypeScript</option>
+                                    <option value="C++">C++</option>
+                                    <option value="Go">Go</option>
+                                    <option value="Rust">Rust</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="explainCode">请粘贴需要解释的代码：</label>
+                                <textarea class="form-control code-area" id="explainCode" 
+                                          placeholder="请在此处粘贴您想要理解的代码..."></textarea>
+                            </div>
+                            
+                            <button type="button" class="btn btn-claude btn-lg" onclick="explainCode()">
+                                💡 解释代码
+                            </button>
+                            
+                            <div id="explainResult" class="result-area" style="display: none;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// 检查API连接状态
+function checkApiStatus() {
+    const statusResult = document.getElementById('statusResult');
+    statusResult.innerHTML = '<i class="fa fa-spinner fa-spin"></i> 检查中...';
+    
+    fetch('/claude/status')
+        .then(response => response.json())
+        .then(data => {
+            if (data.code === 200) {
+                statusResult.innerHTML = '<span class="status-success">✅ ' + data.data + '</span>';
+            } else {
+                statusResult.innerHTML = '<span class="status-error">❌ ' + data.message + '</span>';
+            }
+        })
+        .catch(error => {
+            statusResult.innerHTML = '<span class="status-error">❌ 连接失败: ' + error.message + '</span>';
+        });
+}
+
+// 生成代码
+function generateCode() {
+    const prompt = document.getElementById('generatePrompt').value.trim();
+    const language = document.getElementById('generateLanguage').value;
+    const framework = document.getElementById('generateFramework').value.trim();
+    const includeComments = document.getElementById('includeComments').checked;
+    const includeTests = document.getElementById('includeTests').checked;
+    const resultDiv = document.getElementById('generateResult');
+    
+    if (!prompt) {
+        alert('请输入代码需求描述');
+        return;
+    }
+    
+    resultDiv.style.display = 'block';
+    resultDiv.innerHTML = '<div class="loading"><i class="fa fa-spinner fa-spin"></i> 正在生成代码，请稍候...</div>';
+    
+    const requestData = {
+        prompt: prompt,
+        language: language,
+        framework: framework,
+        includeComments: includeComments,
+        includeTests: includeTests
+    };
+    
+    fetch('/claude/generate', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.code === 200) {
+            resultDiv.innerHTML = data.data;
+        } else {
+            resultDiv.innerHTML = '<span class="status-error">生成失败: ' + data.message + '</span>';
+        }
+    })
+    .catch(error => {
+        resultDiv.innerHTML = '<span class="status-error">请求失败: ' + error.message + '</span>';
+    });
+}
+
+// 审查代码
+function reviewCode() {
+    const code = document.getElementById('reviewCode').value.trim();
+    const language = document.getElementById('reviewLanguage').value;
+    const resultDiv = document.getElementById('reviewResult');
+    
+    if (!code) {
+        alert('请输入需要审查的代码');
+        return;
+    }
+    
+    resultDiv.style.display = 'block';
+    resultDiv.innerHTML = '<div class="loading"><i class="fa fa-spinner fa-spin"></i> 正在审查代码，请稍候...</div>';
+    
+    const formData = new FormData();
+    formData.append('code', code);
+    formData.append('language', language);
+    
+    fetch('/claude/review', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.code === 200) {
+            resultDiv.innerHTML = data.data;
+        } else {
+            resultDiv.innerHTML = '<span class="status-error">审查失败: ' + data.message + '</span>';
+        }
+    })
+    .catch(error => {
+        resultDiv.innerHTML = '<span class="status-error">请求失败: ' + error.message + '</span>';
+    });
+}
+
+// 解释代码
+function explainCode() {
+    const code = document.getElementById('explainCode').value.trim();
+    const language = document.getElementById('explainLanguage').value;
+    const resultDiv = document.getElementById('explainResult');
+    
+    if (!code) {
+        alert('请输入需要解释的代码');
+        return;
+    }
+    
+    resultDiv.style.display = 'block';
+    resultDiv.innerHTML = '<div class="loading"><i class="fa fa-spinner fa-spin"></i> 正在解释代码，请稍候...</div>';
+    
+    const formData = new FormData();
+    formData.append('code', code);
+    formData.append('language', language);
+    
+    fetch('/claude/explain', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.code === 200) {
+            resultDiv.innerHTML = data.data;
+        } else {
+            resultDiv.innerHTML = '<span class="status-error">解释失败: ' + data.message + '</span>';
+        }
+    })
+    .catch(error => {
+        resultDiv.innerHTML = '<span class="status-error">请求失败: ' + error.message + '</span>';
+    });
+}
+
+// 页面加载完成后自动检查API状态
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(checkApiStatus, 1000);
+});
+</script>
+
+<div th:insert="~{footer :: foot}"></div>
+</body>
+</html>
