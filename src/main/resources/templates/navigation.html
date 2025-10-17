@@ -28,6 +28,7 @@
             </form>
             <ul class="nav navbar-nav navbar-right">
                 <li th:if="${session.user != null}"><a href="/publish">提问</a></li>
+                <li><a href="/claude/coding">Claude编码助手</a></li>
                 <li><a href="/profile/replies">通知 <span class="badge" th:text="${session.unreadCount}"></span></a></li>
                 <li th:if="${session.user == null}">
                     <a th:href="@{https://github.com/login/oauth/authorize(client_id='Iv1.4074cf876049ffa6',redirect_uri=${#httpServletRequest.getContextPath()}+'callback',scope='user',state=1)}">登录
